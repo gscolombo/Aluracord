@@ -1,38 +1,17 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-import config from '../config.json';
+import config from '../../config.json';
+
+// Hooks do React
+import React, { useEffect, useState } from 'react';
+
+// Componentes e funções do Next
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
+// Scripts personalizados
+import randomColors from "../utils/randomColors";
 
 const colors = config.theme.colors;
-
-function GlobalStyle() {
-    return (
-        <style global jsx>
-            {`
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                    list-style: none;
-                  }
-                  body {
-                    font-family: 'Open Sans', sans-serif;
-                  }
-                  /* App fit Height */ 
-                  html, body, #__next {
-                    min-height: 100vh;
-                    display: flex;
-                    flex: 1;
-                  }
-                  #__next {
-                    flex: 1;
-                  }
-                  #__next > * {
-                    flex: 1;
-                  }
-                  /* ./App fit Height */ 
-            `}
-        </style>
-    );
-}
 
 function Title(props) {
     const Tag = props.tag || 'h1';
@@ -43,8 +22,9 @@ function Title(props) {
                 {`
                     ${Tag} {
                         color: ${colors.neutrals['000']};
-                        font-size: 24px;
-                        font-weight: 300;
+                        font-size: 36px;
+                        font-weight: 600;
+                        font-family: 'Titillium Web', sans-serif;
                     }
                 `}
             </style>
@@ -53,12 +33,30 @@ function Title(props) {
 }
 
 export default function HomePage() {
-    const name = 'Gabriel Colombo'
-    const username = 'gscolombo';
-    const bgImage = "https://images.pexels.com/photos/4644812/pexels-photo-4644812.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260";
+    const [username, setUsername] = useState('');
+
+    const routing = useRouter();
+    const bgImage = "https://i.imgur.com/GCJRhiA.png";
+    const userImgSrc = username.length > 2 ? "https://github.com/" + username + ".png" : "";
+
+    useEffect(() => {
+        randomColors();
+    });
+    
+    let removeDisplayClass = "";
+    if (username === "") {
+        removeDisplayClass = "unshow";
+    }
+
     return (
         <>
-            <GlobalStyle />
+            <Head>
+                <style>
+                    {
+                        '@import url(https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;300;400;600;700&display=swap);'
+                    }
+                </style>
+            </Head>
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -69,17 +67,18 @@ export default function HomePage() {
                     backgroundSize: 'cover',
                 }}
             >
-                <Box
+                <Box className='main'
                     styleSheet={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-around',
                         flexDirection: {
                             xs: 'column',
                             sm: 'row',
                         },
                         width: '100%', maxWidth: '700px',
+                        border: `2px solid rgb(255 255 255)`,
                         borderRadius: '5px', padding: '32px', margin: '16px',
-                        boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-                        backgroundColor: colors.neutrals['700'], 
+                        boxShadow: `inset 0 0 30px 0 rgb(0 0 0 / 50%)`,
+                        backgroundColor: 'rgb(0, 0, 0, .75)', 
                     }}
                 >
                     {/* Formulário */}
@@ -93,21 +92,38 @@ export default function HomePage() {
                             textAlign: 'center',
                             marginBottom: '32px',
                         }}
+                        onSubmit={
+                            function(e) {
+                                e.preventDefault();
+                                routing.push('/chat');
+                            }
+                        }
                     >
-                        <Title tag='h2'>Bem vindo de volta!</Title>
+                        <Title>Bem vindo de volta!</Title>
                         <Text variant="body3"
                             styleSheet={{
-                                marginBottom: '32px', color: colors.neutrals['300']
+                                marginBottom: '32px', color: colors.neutrals['100'],
+                                fontFamily: 'Titillium Web, sans-serif;',
+                                fontSize: '18px',
+                                fontWeight: '400'
                             }}>
                                 {config.name}
                             </Text>
-                        <TextField fullWidth 
+                        <TextField fullWidth
+                            placeholder='Insira seu nome de usuário do Github'
+                            value={username}
+                            onChange={
+                               function(event) {
+                                   const value = event.target.value;
+                                   setUsername(value);
+                               }
+                           }
                             textFieldColors={{
                                 neutral: {
-                                    textColor: colors.neutrals['200'],
-                                    mainColor: colors.neutrals['900'],
+                                    textColor: colors.neutrals['900'],
+                                    mainColor: colors.neutrals['200'],
                                     mainColorHighlight: colors.primary['500'],
-                                    backgroundColor: colors.neutrals['800']
+                                    backgroundColor: colors.neutrals['000']
                                 }
                             }}
                         />
@@ -132,29 +148,30 @@ export default function HomePage() {
 
                     {/* Área da Foto */}
                     <Box
+                        className='imgField'
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', 
                             alignItems: 'center',
                             maxWidth: '200px',
                             padding: '16px',
-                            backgroundColor: colors.neutrals['800'],
-                            border: '1px solid',
-                            borderColor: colors.neutrals['999'],
+                            boxShadow: `inset 0 0 70px 0 rgb(0 0 0 / 50%)`,
+                            backgroundColor: 'rgb(255, 255, 255, .5)', 
                             borderRadius: '10px',
                             flex: 1,
                             minHeight: '240px'
                         }}
                     >
 
-                        <Image 
+                        <Image
                             styleSheet={{
                                 borderRadius: '50%',
-                                marginBottom: '8px'
+                                marginBottom: '16px',
                             }}
-                            src={`https://github.com/${username}.png`}
+                            src={ userImgSrc }
                         />
 
                         <Text
+                            className={ removeDisplayClass }
                             variant="body4"
                             styleSheet={{
                                 color: colors.neutrals['200'],
@@ -166,17 +183,6 @@ export default function HomePage() {
                         >
                             {username}
                         </Text>
-
-                        <Text
-                            variant="heading5"
-                            styleSheet={{
-                                color: colors.neutrals['200'],
-                                padding: '2px 10px',
-                            }}
-                        >
-                            {name}
-                        </Text>
-
                     </Box>
                     {/* Área da Foto */}
 
