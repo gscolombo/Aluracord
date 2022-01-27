@@ -2,6 +2,16 @@ function GlobalStyle() {
     return (
         <style global jsx>
             {`
+                @import url(https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;300;400;600;700&display=swap);
+                
+                @keyframes rotate360{
+                  from {
+                    transform: rotate(0deg)
+                  } to {
+                    transform: rotate(360deg)
+                  }
+                }
+
                 * {
                     margin: 0;
                     padding: 0;
@@ -26,7 +36,7 @@ function GlobalStyle() {
                   /* ./App fit Height */ 
 
                   .unshow {
-                    display: none;
+                    display: none !important;
                   }
             `}
         </style>
