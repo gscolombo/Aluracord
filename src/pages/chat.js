@@ -1,5 +1,5 @@
 import { Box, Text, TextField, Button, Image } from "@skynexui/components";
-import { useEffect, useState } from "react/cjs/react.development";
+import React, { useEffect, useState } from 'react';
 import config from "../config.json";
 
 // Supabase
