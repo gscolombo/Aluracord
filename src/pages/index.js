@@ -63,7 +63,7 @@ export default function HomePage() {
                     lastSize: size,
                     size: size
                 })
-            }, 2000);   
+            }, 1000);   
         }
 
         if (stringSize.lastSize === stringSize.size){
@@ -121,9 +121,12 @@ export default function HomePage() {
 
     // Utilidades
     useEffect(() => {
-        randomColors();
         handleLoading(loadingState);
     });
+
+    useEffect(() => {
+        randomColors();
+    }, [])
     
     let removeDisplayClass = "";
     if (username === "") {
