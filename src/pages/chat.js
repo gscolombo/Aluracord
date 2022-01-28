@@ -3,27 +3,44 @@ import React, { useEffect, useState } from 'react';
 import config from "../config.json";
 
 // Supabase
+import { createClient } from "@supabase/supabase-js";
+
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyODg3MSwiZXhwIjoxOTU4OTA0ODcxfQ.aP7Uojxx1j8H72MMwR9xpz2_0zzRe8tgZbKpXLFYPto";
 const SUPABASE_URL = "https://aijrncfzrejofeycjmsy.supabase.co";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const colors = config.theme.colors;
 
 export default function ChatPage(){
     const [message, setMessage] = useState('');
+    const [loadingState, setLoadingState] = useState('unloaded');
     const [messageList, setMessageList] = useState([]);
 
+    const bool = true;
+
+    // Busca das mensagens no banco de dados externo
+    useEffect(() => {
+        supabase.from('mensagens')
+        .select("*")
+        .order("id", { ascending: false})
+        .then(({ data }) => setMessageList(data));
+    }, []);
 
     function handleNewMessage(newMessage) {
         const message = {
-            id: messageList.length + 1,
-            text: newMessage,
-            from: 'gscolombo',
+            texto: newMessage,
+            de: 'gscolombo',
         }
 
-        setMessageList([
-            message,
-            ...messageList
-        ]);
+        supabase.from('mensagens')
+        .insert(message)
+        .then( ({ data }) => {
+            setMessageList([
+                data[0],
+                ...messageList
+            ]);
+        });
+
         setMessage('');
     }
 
@@ -68,13 +85,17 @@ export default function ChatPage(){
                         <MessageList 
                             messages={ messageList }
                             customOnClick={(id) => {
-                                const newMessageList = messageList.filter( item => {
-                                    if (item.id !== id) {
-                                        return item;
-                                    }
-                                });
-
-                                setMessageList(newMessageList);
+                                supabase.from('mensagens')
+                                .delete()
+                                .match({ id: id })
+                                .then( ({ data }) => {
+                                    const filteredList = messageList.filter( item => {
+                                        if (item.id !== data[0].id) {
+                                            return item;
+                                        }
+                                    })
+                                    setMessageList(filteredList);
+                                })
                             }}
                         />
 
@@ -159,7 +180,7 @@ function MessageList(props) {
         <Box
             tag="ul"
             styleSheet={{
-                // overflow: 'scroll',
+                overflowY: 'scroll',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -184,13 +205,17 @@ function MessageList(props) {
                         }}
                         onMouseEnter={(e) => {
                             const li = e.target;
-                            const button = li.querySelector('.gg-trash');
-                            button.classList.remove("unshow");                            
+                            if (typeof li !== "undefined"){
+                                const button = li.querySelector('.gg-trash');
+                                button.classList.remove("unshow");
+                            }                           
                         }}
                         onMouseLeave={ (e) => {
                             const li = e.target;
-                            const button = li.querySelector('.gg-trash');
-                            button.classList.add("unshow");
+                            if (typeof li !== "undefined"){
+                                const button = li.querySelector('.gg-trash');
+                                button.classList.add("unshow");
+                            }
                         }}
                     >
                         <Box
@@ -211,7 +236,7 @@ function MessageList(props) {
                                 src={`https://github.com/gscolombo.png`}
                             />
                             <Text tag="strong">
-                                { message.from }
+                                { message.de }
                             </Text>
                             <Text
                                 styleSheet={{
@@ -238,7 +263,7 @@ function MessageList(props) {
                             >
                             </button>
                         </Box>
-                        { message.text }
+                        { message.texto }
                     </Text>
                 )
             })}
