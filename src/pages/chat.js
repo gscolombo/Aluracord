@@ -155,22 +155,6 @@ function Header() {
 }
 
 function MessageList(props) {
-    const [mouseState, setMouseState] = useState([]);
-
-    // Função para verificar o hover na mensagem
-    useEffect(() => {
-        if (mouseState.length > 0 && mouseState[0] !== "deletedItem") {
-            const state = mouseState[0];
-    
-            if (typeof document !== "undefined") {
-                const button = mouseState[1].querySelector(".gg-trash");
-                state === "over" ?
-                button.classList.remove("unshow") : button.classList.add("unshow");
-            }            
-        }
-    }, [mouseState[0]]);
-
-
     return (
         <Box
             tag="ul"
@@ -200,11 +184,13 @@ function MessageList(props) {
                         }}
                         onMouseEnter={(e) => {
                             const li = e.target;
-                            setMouseState(["over", li]);
+                            const button = li.querySelector('.gg-trash');
+                            button.classList.remove("unshow");                            
                         }}
                         onMouseLeave={ (e) => {
                             const li = e.target;
-                            setMouseState(["out", li]);
+                            const button = li.querySelector('.gg-trash');
+                            button.classList.add("unshow");
                         }}
                     >
                         <Box
@@ -248,7 +234,6 @@ function MessageList(props) {
                                 onClick={(e) => {
                                     const id = Number.parseInt(e.nativeEvent.path[2].id);
                                     props.customOnClick(id);
-                                    setMouseState(["deletedItem"]);
                                 }}
                             >
                             </button>
