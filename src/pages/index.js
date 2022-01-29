@@ -7,30 +7,14 @@ import React, { useEffect, useState } from 'react';
 // Componentes e funções do Next
 import { useRouter } from 'next/router';
 
+// Componentes personalizados
+import Title from '../components/Title';
+
 // Scripts personalizados
 import randomColors from "../utils/randomColors";
 import handleLoading from '../utils/handleLoading';
 
 const colors = config.theme.colors;
-
-function Title(props) {
-    const Tag = props.tag || 'h1';
-    return (
-        <>
-            <Tag>{props.children}</Tag>
-            <style jsx>
-                {`
-                    ${Tag} {
-                        color: ${colors.neutrals['000']};
-                        font-size: 36px;
-                        font-weight: 600;
-                        font-family: 'Titillium Web', sans-serif;
-                    }
-                `}
-            </style>
-        </>
-    )
-}
 
 let timer;
 export default function HomePage() {

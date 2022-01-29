@@ -2,12 +2,28 @@ import { Box, Text, TextField, Button, Image } from "@skynexui/components";
 import React, { useEffect, useState } from 'react';
 import config from "../config.json";
 
+// Componentes do Next
+import Head from "next/head";
+
 // Supabase
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyODg3MSwiZXhwIjoxOTU4OTA0ODcxfQ.aP7Uojxx1j8H72MMwR9xpz2_0zzRe8tgZbKpXLFYPto";
 const SUPABASE_URL = "https://aijrncfzrejofeycjmsy.supabase.co";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function listenDB(f) {
+    return supabase
+        .from('mensagens')
+        .on("INSERT", (info) => {
+            f(info.new);
+        })
+        .subscribe();
+}
+
+// Componentes personalizados
+import { StickersButton } from "../components/StickersButton";
+import { MessageList } from "../components/MessageList";
 
 const colors = config.theme.colors;
 
@@ -16,36 +32,38 @@ export default function ChatPage(){
     const [loadingState, setLoadingState] = useState('unloaded');
     const [messageList, setMessageList] = useState([]);
 
-    const bool = true;
-
     // Busca das mensagens no banco de dados externo
     useEffect(() => {
         supabase.from('mensagens')
         .select("*")
         .order("id", { ascending: false})
         .then(({ data }) => setMessageList(data));
-    }, []);
 
-    function handleNewMessage(newMessage) {
+        listenDB( newMessage => {
+            setMessageList( previousList => {
+                return [
+                    newMessage,
+                    ...previousList
+                ]
+            });
+        });
+    },  []);
+
+    async function handleNewMessage(newMessage) {
         const message = {
             texto: newMessage,
             de: 'gscolombo',
         }
 
-        supabase.from('mensagens')
-        .insert(message)
-        .then( ({ data }) => {
-            setMessageList([
-                data[0],
-                ...messageList
-            ]);
-        });
-
+        await supabase.from('mensagens').insert(message);
         setMessage('');
     }
 
     return (
         <>
+            <Head>
+                <link href='https://css.gg/trash.css' rel='stylesheet'></link>
+            </Head>
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -99,6 +117,7 @@ export default function ChatPage(){
                             }}
                         />
 
+                        
                         <Box
                             as="form"
                             styleSheet={{
@@ -106,12 +125,19 @@ export default function ChatPage(){
                                 alignItems: 'center',
                             }}
                         >
+                            <StickersButton
+                                onStickerClick={(sticker) => {
+                                    handleNewMessage(`:sticker:${sticker}`)
+                                }}
+                            />
                             <TextField
                                 value={ message }
                                 onKeyPress={ e => {
                                     if (e.key === "Enter") {
                                         e.preventDefault();
-                                        handleNewMessage(message);
+                                        if (message !== "") {
+                                            handleNewMessage(message);
+                                        } 
                                     }
                                 }}
                                 onChange={e => {
@@ -128,7 +154,7 @@ export default function ChatPage(){
                                     borderRadius: '5px',
                                     padding: '6px 8px',
                                     backgroundColor: colors.neutrals[800],
-                                    marginRight: '12px',
+                                    margin: '0 12px',
                                     color: colors.neutrals[200],
                                 }}
                             />
@@ -140,7 +166,7 @@ export default function ChatPage(){
                                     height: "100%"
                                 }}
                                 onClick={ () => {
-                                    handleNewMessage(message)
+                                    handleNewMessage(message);
                                 }}
                             />
                         </Box>
@@ -175,99 +201,3 @@ function Header() {
     )
 }
 
-function MessageList(props) {
-    return (
-        <Box
-            tag="ul"
-            styleSheet={{
-                overflowY: 'scroll',
-                display: 'flex',
-                flexDirection: 'column-reverse',
-                flex: 1,
-                color: colors.neutrals["000"],
-                marginBottom: '16px',
-            }}
-        >
-            {props.messages.map( message => {
-                return (
-                    <Text
-                        key={ message.id }
-                        id={ message.id}
-                        className="message"
-                        tag="li"
-                        styleSheet={{                   
-                            borderRadius: '5px',
-                            padding: '6px',
-                            marginBottom: '12px',
-                            hover: {
-                                backgroundColor: colors.neutrals[700],
-                            }
-                        }}
-                        onMouseEnter={(e) => {
-                            const li = e.target;
-                            if (typeof li !== "undefined"){
-                                const button = li.querySelector('.gg-trash');
-                                button.classList.remove("unshow");
-                            }                           
-                        }}
-                        onMouseLeave={ (e) => {
-                            const li = e.target;
-                            if (typeof li !== "undefined"){
-                                const button = li.querySelector('.gg-trash');
-                                button.classList.add("unshow");
-                            }
-                        }}
-                    >
-                        <Box
-                            styleSheet={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: '8px',
-                            }}
-                        >
-                            <Image
-                                styleSheet={{
-                                    width: '20px',
-                                    height: '20px',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    marginRight: '8px',
-                                }}
-                                src={`https://github.com/gscolombo.png`}
-                            />
-                            <Text tag="strong">
-                                { message.de }
-                            </Text>
-                            <Text
-                                styleSheet={{
-                                    fontSize: '10px',
-                                    marginLeft: '8px',
-                                    color: colors.neutrals[300],
-                                }}
-                                tag="span"
-                            >
-                                {(new Date().toLocaleDateString())}
-                            </Text>
-
-                            <link href='https://css.gg/trash.css' rel='stylesheet'></link>
-                            <button 
-                                className="gg-trash unshow"
-                                style={{
-                                    marginLeft: "auto",
-                                    cursor: "pointer"
-                                }}
-                                onClick={(e) => {
-                                    const id = Number.parseInt(e.nativeEvent.path[2].id);
-                                    props.customOnClick(id);
-                                }}
-                            >
-                            </button>
-                        </Box>
-                        { message.texto }
-                    </Text>
-                )
-            })}
-            
-        </Box>
-    )
-}
