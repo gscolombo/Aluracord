@@ -12,32 +12,57 @@ function GlobalStyle() {
                   }
                 }
 
+                @keyframes rollercoaster{
+                  0% {
+                    transform: translateY(0)
+                  } 50% {
+                    transform: translateY(-5px)
+                  } 100% {
+                    tranform: translateY(5px)
+                  }
+                }
+
                 * {
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
                     list-style: none;
-                  }
-                  body {
-                    font-family: 'Open Sans', sans-serif;
-                  }
-                  /* App fit Height */ 
-                  html, body, #__next {
-                    min-height: 100vh;
-                    display: flex;
-                    flex: 1;
-                  }
-                  #__next {
-                    flex: 1;
-                  }
-                  #__next > * {
-                    flex: 1;
-                  }
-                  /* ./App fit Height */ 
+                }
 
-                  .unshow {
-                    display: none !important;
-                  }
+                .custom-scrollbar::-webkit-scrollbar {
+                  width: 15px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-track {
+                  background-color: #080A0C;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background-color: #6633FF;
+                  border: 5px solid #080A0C;
+                  border-radius: 10px;
+                }
+
+                body, span {
+                  font-family: 'Titillium Web', sans-serif !important;
+                }
+                /* App fit Height */ 
+                html, body, #__next {
+                  min-height: 100vh;
+                  display: flex;
+                  flex: 1;
+                }
+                #__next {
+                  flex: 1;
+                }
+                #__next > * {
+                  flex: 1;
+                }
+                /* ./App fit Height */ 
+
+                .unshow {
+                  display: none !important;
+                }
             `}
         </style>
     );

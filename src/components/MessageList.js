@@ -59,7 +59,7 @@ export function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/gscolombo.png`}
+                                src={ message.avatar }
                             />
                             <Text tag="strong">
                                 { message.de }

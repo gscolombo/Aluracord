@@ -24,6 +24,7 @@ function listenDB(f) {
 // Componentes personalizados
 import { StickersButton } from "../components/StickersButton";
 import { MessageList } from "../components/MessageList";
+import { useRouter } from "next/router";
 
 const colors = config.theme.colors;
 
@@ -31,6 +32,10 @@ export default function ChatPage(){
     const [message, setMessage] = useState('');
     const [loadingState, setLoadingState] = useState('unloaded');
     const [messageList, setMessageList] = useState([]);
+
+    const routing = useRouter();
+    const loggedUser = routing.query.username;
+    const avatar = routing.query.avatar;
 
     // Busca das mensagens no banco de dados externo
     useEffect(() => {
@@ -52,7 +57,8 @@ export default function ChatPage(){
     async function handleNewMessage(newMessage) {
         const message = {
             texto: newMessage,
-            de: 'gscolombo',
+            de: loggedUser,
+            avatar: avatar
         }
 
         await supabase.from('mensagens').insert(message);
@@ -101,6 +107,8 @@ export default function ChatPage(){
                         }}
                     >
                         <MessageList 
+                            username={ loggedUser }
+                            avatar={ avatar }
                             messages={ messageList }
                             customOnClick={(id) => {
                                 supabase.from('mensagens')
