@@ -1,7 +1,7 @@
 export default async function getCatPics() {
     const url = new URL("https://api.thecatapi.com/v1/images/search");
     const params = {
-        limit: 21,
+        limit: 30,
         category_ids: "2",
         size: "small"
     };

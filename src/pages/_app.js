@@ -12,6 +12,26 @@ function GlobalStyle() {
                   }
                 }
 
+                @keyframes growFromTheSides{
+                  from {
+                    clip-path: inset(0 50%);
+                    opacity: 0.75;
+                  } to {
+                    clip-path: inset(0 0);
+                    opacity: 1;
+                  }
+                }
+
+                @keyframes shrinkFromTheSides{
+                  from {
+                    clip-path: inset(0 0);
+                    opacity: 1;
+                  } to {
+                    clip-path: inset(0 50%);
+                    opacity: 0.75;
+                  }
+                }
+
                 @keyframes rollercoaster{
                   0% {
                     transform: translateY(0)
@@ -62,6 +82,14 @@ function GlobalStyle() {
 
                 .unshow {
                   display: none !important;
+                }
+
+                .avatarBox {
+                  animation: growFromTheSides .25s forwards;
+                }
+
+                .avatarBox.out {
+                  animation: shrinkFromTheSides .25s forwards
                 }
             `}
         </style>

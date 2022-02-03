@@ -6,7 +6,7 @@ const colors = config.theme.colors;
 
 export default function CatPicker(props) {
     const [cat, setCat] = useState(props.avatar);
-    const [avatarBox, setAvatarBox] = useState("unshow");
+    const [avatarBox, setAvatarBox] = useState("avatarBox unshow");
 
     return (
         <>
@@ -28,7 +28,7 @@ export default function CatPicker(props) {
                     borderRadius: '10px'
                 }}
                 onClick={ () => {
-                    setAvatarBox("");
+                    setAvatarBox("avatarBox");
                 } }
             />
 
@@ -38,11 +38,18 @@ export default function CatPicker(props) {
                     display: "flex", flexDirection: "column", 
                     boxShadow: `inset 0 0 30px 0 rgb(0 0 0 / 50%)`,
                     backgroundColor: colors.primary["200"] + "EF",
-                    minWidth: "400px",
+                    minWidth: {
+                        md: "400px",
+                        xs: '20vw'
+                    },
                     height: "300px",
                     position: "absolute",
-                    top: "25vh",
+                    top: {
+                        md: "25vh",
+                        xs: "35vh"
+                    },
                     borderRadius: "10px",
+                    // animation: "growFromTheSides .25s",
                 }}
             >
                 <Button
@@ -58,18 +65,27 @@ export default function CatPicker(props) {
                         marginTop: "5px"
                     }}
                     onClick={() => {
-                        setAvatarBox("unshow")
+                        setAvatarBox('avatarBox out')
+                        setTimeout(() => {
+                            setAvatarBox("avatarBox unshow")
+                        }, 500)
                     }}
                 />
                 <Box
                 className="custom-scrollbar"
                 styleSheet={{
                     display: "grid", 
-                    gridTemplateColumns: "repeat(3, 1fr)", 
+                    gridTemplateColumns: {
+                        xs: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)"
+                    }, 
                     gap: "10px",
                     boxShadow: `inset 0 0 30px 0 rgb(0 0 0 / 50%)`,
                     backgroundColor: colors.neutrals['999'],
-                    width: "390px",
+                    width: {
+                        md: "390px",
+                        xs: "300px"
+                    },
                     height: "290px",
                     borderRadius: "5px",
                     margin: "5px auto",
@@ -106,8 +122,12 @@ export default function CatPicker(props) {
                                     src={ cat.url }
                                     onClick={() => {
                                         setCat(cat.url);
-                                        setAvatarBox("unshow");
+                                        setAvatarBox("avatarBox out");
                                         props.onCat( cat.url )
+
+                                        setTimeout(() => {
+                                            setAvatarBox("avatarBox unshow");
+                                        }, 250)
                                     }}
                                 />
                             </Box>

@@ -283,8 +283,10 @@ export default function HomePage() {
                                         setPlaceholder("Insira seu nome de usuário");
                                         setButtonLabel("Voltar");
 
-                                        const randomCat = data[Math.floor(Math.random() * (data.length + 1))].url;
-                                        setCatAvatar(randomCat);
+                                        if (data.length > 0) {
+                                            const randomCat = data[Math.floor(Math.random() * (data.length + 1))].url;
+                                            setCatAvatar(randomCat);
+                                        }
                                     });
                                 } else {
                                     setCatPicker(false);
