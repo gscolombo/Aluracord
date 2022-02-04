@@ -9,11 +9,21 @@ export default async function getCatPics() {
     Object.keys(params).forEach( key => url.searchParams.append(key, params[key]));
     const key = process.env.NEXT_PUBLIC_X_API_KEY;
 
-    const res = await fetch(url, {
-        headers: {
-            'x-api-key': key
-        },
-    });
-    const json = await res.json();
-    return json;    
+    try {
+        const res = await fetch(url, {
+            headers: {
+                'x-api-key': key
+            },
+        });
+        if (res.ok) {
+            const json = await res.json();
+            return json;
+        } else {
+            throw new Error("Falha na requisição de gatinhos");
+        }
+    } catch ( error ) {
+        console.error(error)
+        return "Não foram encontrados gatinhos :(";
+    }
+      
 }

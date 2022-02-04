@@ -50,12 +50,14 @@ export default function HomePage() {
         const [usernameBoxClass, setusernameBoxClass] = useState('unshow');
         const [loadingUser, setloadingUser] = useState('show');
         const [loadingText, setLoadingText] = useState('Aguardando usuário');
+        const [loadingCircles, setLoadingCircles] = useState('show');
         const [opacity, setOpacity] = useState(0);
 
         // GATOS
         const [cats, setCats] = useState({ content: [], status: 'unloaded'});
         const [catPicker, setCatPicker] = useState(false);
         const [catAvatar, setCatAvatar] = useState("");
+        const [catCrying, setCatCrying] = useState("unshow");
     
 
     // Função para verificar e guardar último valor de input 
@@ -248,7 +250,7 @@ export default function HomePage() {
                                 color: colors.neutrals['000'],
                             }}
                             onClick={(e) => {
-                                if (placeholder === "...") e.preventDefault();
+                                if (placeholder === "..." || placeholder === "😔 f") e.preventDefault()
                             }}
                         />
 
@@ -273,19 +275,28 @@ export default function HomePage() {
 
                                     const catsJSON = getCatPics();
                                     catsJSON.then(data => {
-                                        setCats({
-                                            content: data,
-                                            status: "loaded"
-                                        })
-                                        setOpacity(1);
-                                        setloadingUser("unshow");
-                                        setCatPicker(true);
-                                        setPlaceholder("Insira seu nome de usuário");
-                                        setButtonLabel("Voltar");
+                                        if ( Array.isArray(data) && data.length > 0) {
+                                            setCats({
+                                                content: data,
+                                                status: "loaded"
+                                            })
+                                            setOpacity(1);
+                                            setloadingUser("unshow");
+                                            setLoadingCircles("unshow");
+                                            setCatCrying("unshow");
+                                            setCatPicker(true);
+                                            setPlaceholder("Insira seu nome de usuário (ou do seu gato)");
+                                            setButtonLabel("Voltar");
 
-                                        if (data.length > 0) {
                                             const randomCat = data[Math.floor(Math.random() * (data.length + 1))].url;
                                             setCatAvatar(randomCat);
+                                        } else {
+                                            setLoadingText(data);
+                                            setLoadingCircles("unshow");
+                                            setCatCrying("show");
+                                            setButtonLabel("Voltar");
+                                            setPlaceholder("😔 f");
+                                            setCatPicker(true);
                                         }
                                     });
                                 } else {
@@ -294,8 +305,10 @@ export default function HomePage() {
                                     setLoadingText("Aguardando usuário");
                                     setOpacity(0);
                                     setloadingUser("show");
+                                    setLoadingCircles("show");
                                     setPlaceholder("Insira seu nome de usuário do Github");
                                     setButtonLabel("Não possui uma conta no Github? Clique aqui!");
+                                    setCatCrying("unshow");
                                 }
                                 
                             }}
@@ -352,7 +365,7 @@ export default function HomePage() {
                         >
                             { loadingText }
                             <Box
-                                className={ loadingUser }
+                                className={ loadingCircles }
                                 styleSheet={{ 
                                     display: "flex", justifyContent: "space-around",
                                     width: "40%",
@@ -392,7 +405,15 @@ export default function HomePage() {
                                     }}
                                 />
                             </Box>
-                            
+                            <Image 
+                                className={ catCrying }
+                                src='https://c.tenor.com/hu4sl_5rDXcAAAAC/cat-catcry.gif'
+                                styleSheet={{
+                                    width: "30%",
+                                    margin: "10px auto 0 auto"
+                                }}
+                            />
+
                         </Text>
 
                         
